@@ -29,37 +29,33 @@ public partial class LibraryDbContext : DbContext
     {
         modelBuilder.Entity<Author>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Authors__3214EC07459DE938");
-
+            entity.HasKey(e => e.Id);
             entity.Property(e => e.Name).HasMaxLength(100);
-        });
-
-        modelBuilder.Entity<Book>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__Books__3214EC075A26E629");
-
-            entity.Property(e => e.Title).HasMaxLength(200);
-
-            entity.HasOne(d => d.Author).WithMany(p => p.Books)
-                .HasForeignKey(d => d.AuthorId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Books__AuthorId__3B75D760");
-
-            entity.HasOne(d => d.Genre).WithMany(p => p.Books)
-                .HasForeignKey(d => d.GenreId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Books__GenreId__3C69FB99");
         });
 
         modelBuilder.Entity<Genre>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Genres__3214EC077DAC6339");
-
+            entity.HasKey(e => e.Id);
             entity.Property(e => e.Title).HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<Book>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Title).HasMaxLength(200);
+
+            entity.HasOne(b => b.Author)
+                  .WithMany(a => a.Books)
+                  .HasForeignKey(b => b.AuthorId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(b => b.Genre)
+                  .WithMany(g => g.Books)
+                  .HasForeignKey(b => b.GenreId)
+                  .OnDelete(DeleteBehavior.Cascade);
         });
 
         OnModelCreatingPartial(modelBuilder);
     }
-
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }
